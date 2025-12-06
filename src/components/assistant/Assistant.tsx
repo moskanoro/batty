@@ -28,7 +28,10 @@ export default function Assistant() {
     useEffect(() => {
         setModel("models/gemini-2.0-flash-exp");
         setConfig({
-            responseModalities: [Modality.TEXT],
+            responseModalities: [Modality.AUDIO],
+            speechConfig: {
+                voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } },
+            },
             systemInstruction: {
                 parts: [
                     {
@@ -55,7 +58,12 @@ You must respond fast and allow interruptions.`,
         const filtered = logs.filter((log) => {
             if (typeof log.message === "object") {
                 if ("turns" in log.message && "turnComplete" in log.message) return true;
-                if ("serverContent" in log.message && "modelTurn" in log.message.serverContent) return true;
+                if (
+                    "serverContent" in log.message &&
+                    log.message.serverContent &&
+                    "modelTurn" in log.message.serverContent
+                )
+                    return true;
             }
             return false;
         });
@@ -71,7 +79,10 @@ You must respond fast and allow interruptions.`,
             if (isUser) {
                 text = (log.message as any).turns.map((t: any) => t.text).join(" ");
             } else {
-                text = (log.message as any).serverContent.modelTurn.parts.map((p: any) => p.text).join("");
+                const modelTurn = (log.message as any).serverContent.modelTurn;
+                if (modelTurn && modelTurn.parts) {
+                    text = modelTurn.parts.map((p: any) => p.text).join("");
+                }
             }
 
             if (!text) continue;
@@ -90,6 +101,20 @@ You must respond fast and allow interruptions.`,
 
     return (
         <div className="assistant-container" ref={scrollRef}>
+            {conversationLogs.length === 0 && (
+                <div className="message ai">
+                    <div className="role">SYSTEM</div>
+                    <div className="content">
+                        Hello! I am your AI Assistant.
+                        <br /><br />
+                        1. Click the <b>Play</b> button below to start.
+                        <br />
+                        2. Allow microphone access.
+                        <br />
+                        3. Speak to me!
+                    </div>
+                </div>
+            )}
             {conversationLogs.map((msg, index) => (
                 <div key={index} className={`message ${msg.role}`}>
                     <div className="role">{msg.role === "user" ? "User" : "AI"}</div>
