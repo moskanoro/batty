@@ -31,6 +31,13 @@ function App() {
   // either the screen capture, the video or null, if null we hide it
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
 
+  const apiOptions = useMemo(
+    () => ({
+      apiKey: API_KEY,
+    }),
+    []
+  );
+
   if (!API_KEY) {
     return (
       <div className="App">
@@ -49,12 +56,7 @@ function App() {
     );
   }
 
-  const apiOptions = useMemo(
-    () => ({
-      apiKey: API_KEY,
-    }),
-    []
-  );
+
 
   return (
     <div className="App">
