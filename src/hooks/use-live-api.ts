@@ -64,26 +64,18 @@ export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
       setConnected(true);
     };
 
-    const onClose = (event: CloseEvent) => {
-      console.log("Connection Closed:", event);
+    const onClose = () => {
       setConnected(false);
-      // Alert if it closed abnormally or immediately
-      if (event.code !== 1000) {
-        alert(`Connection Closed. Code: ${event.code}. Reason: ${event.reason || "Unknown"}`);
-      }
     };
 
     const onError = (error: ErrorEvent) => {
-      console.error("Connection Error:", error);
-      alert(`Connection Error: ${error.message || "Unknown error"}`);
-      setConnected(false);
+      console.error("error", error);
     };
 
     const stopAudioStreamer = () => audioStreamerRef.current?.stop();
 
-    const onAudio = (data: ArrayBuffer) => {
-      // audioStreamerRef.current?.addPCM16(new Uint8Array(data));
-    }
+    const onAudio = (data: ArrayBuffer) =>
+      audioStreamerRef.current?.addPCM16(new Uint8Array(data));
 
     client
       .on("error", onError)
