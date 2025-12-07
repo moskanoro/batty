@@ -163,16 +163,19 @@ function ControlTray({
     <section className="control-tray">
       <canvas style={{ display: "none" }} ref={renderCanvasRef} />
       <nav className={cn("actions-nav", { disabled: !connected })}>
-        <div className={cn("action-button", { microphone: true, on: !muted })} onClick={() => setMuted(!muted)}>
+        <button
+          className={cn("action-button mic-button")}
+          onClick={() => setMuted(!muted)}
+        >
           {!muted ? (
             <span className="material-symbols-outlined filled">mic</span>
           ) : (
             <span className="material-symbols-outlined filled">mic_off</span>
           )}
-        </div>
+        </button>
 
-        <div className="action-button no-action" style={{ background: connected ? "#0d9c53" : "#b4b8bb" }}>
-          {/* <AudioPulse volume={volume} active={connected} hover={false} /> */}
+        <div className="action-button no-action outlined">
+          <AudioPulse volume={volume} active={connected} hover={false} />
         </div>
 
         {supportsVideo && (
@@ -183,6 +186,13 @@ function ControlTray({
               stop={changeStreams()}
               onIcon="cancel_presentation"
               offIcon="present_to_all"
+            />
+            <MediaStreamButton
+              isStreaming={webcam.isStreaming}
+              start={changeStreams(webcam)}
+              stop={changeStreams()}
+              onIcon="videocam_off"
+              offIcon="videocam"
             />
           </>
         )}
